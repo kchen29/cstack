@@ -92,9 +92,12 @@
                   (draw-polygons polygons '(255 0 255))
                   (clear-matrix polygons))
          
-         ("scale" (apply #'scale (caar stack) args))
-         ("move" (apply #'translate (caar stack) args))
-         ("rotate" (apply #'rotate (caar stack) args))
+         ("scale" (setf (caar stack)
+                        (matrix-multiply (caar stack) (apply #'make-scale args))))
+         ("move" (setf (caar stack)
+                       (matrix-multiply (caar stack) (apply #'make-translate args))))
+         ("rotate" (setf (caar stack)
+                         (matrix-multiply (caar stack) (apply #'make-rotate args))))
          
          ("save" (save (string-downcase (symbol-name (first args))))
                  (clear-screen)))))))
@@ -102,8 +105,8 @@
 (defun valid-command (line)
   "Returns t if line is a valid command. Nil otherwise."
   (member line
-          '("pop" "push" "line" "circle" "hermite" "bezier" "box" "sphere" "torus"
-            "scale" "move" "rotate" "display" "save")
+          '("pop" "push" "line" "circle" "hermite" "bezier" "box"
+            "sphere" "torus" "scale" "move" "rotate" "display" "save")
           :test #'string=))
 
 (defun next-line (stream)
