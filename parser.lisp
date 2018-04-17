@@ -52,8 +52,7 @@
 (defun parse-line (line stream edges polygons stack)
   "Parses LINE according to parse-file."
   (switch line #'string=
-    ("display" (display t)
-               (clear-screen))
+    ("display" (display t))
     ("push" (setf (cdr stack) (cons (copy-matrix (car stack)) (cdr stack))))
     ("pop" (setf (car stack) (cadr stack)
                  (cdr stack) (cddr stack)))
@@ -93,8 +92,7 @@
       ("move" (update-current-stack (apply #'make-translate args)))
       ("rotate" (update-current-stack (apply #'make-rotate args)))
       
-      ("save" (save (string-downcase (symbol-name (first args))))
-              (clear-screen)))))
+      ("save" (save (string-downcase (symbol-name (first args))))))))
 
 (defun valid-command (line)
   "Returns t if line is a valid command. Nil otherwise."
