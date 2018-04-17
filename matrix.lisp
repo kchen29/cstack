@@ -1,32 +1,22 @@
 ;;;; Matrices and transformations.
 
-(defclass matrix ()
-  ((rows
-    :initarg :rows
-    :initform 4
-    :accessor m-rows)
-   (cols
-    :initarg :cols
-    :initform 4
-    :accessor m-cols)
-   (last-col
-    :initarg :last-col
-    :initform 0
-    :accessor m-last-col)
-   (array
-    :accessor m-array)))
-
-(defmethod initialize-instance :after ((mat matrix) &key)
-  (setf (m-array mat)
-        (make-array (list (m-rows mat) (m-cols mat))
-                    :adjustable t)))
-
-(defun make-matrix ()
-  (make-instance 'matrix))
+;;matrix struct definition
+(defstruct (matrix (:conc-name m-)
+                   (:constructor m-matrix))
+  rows
+  cols
+  ;;last-col is how many columns there are
+  (last-col 0)
+  array)
 
 (defmacro mref (matrix x y)
   "Accesses array of MATRIX at X and Y."
   `(aref (m-array ,matrix) ,x ,y))
+
+(defun make-matrix (&key (rows 4) (cols 4) (last-col 0))
+  "Makes a matrix."
+  (m-matrix :rows rows :cols cols :last-col last-col
+            :array (make-array (list rows cols) :adjustable t)))
 
 ;;other matrix functions
 (defun adjust-matrix (matrix rows cols)
@@ -80,7 +70,7 @@
 
 ;;;transformations
 (defun make-transform-matrix ()
-  (to-identity (make-instance 'matrix :last-col 4)))
+  (to-identity (make-matrix :last-col 4)))
 
 (defmacro deftransform (transform-name args &body body)
   "Defuns make-transform given TRANSFORM-NAME, using args and the body.
