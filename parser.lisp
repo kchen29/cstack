@@ -54,24 +54,24 @@
   (switch line #'string=
     ("display" (display t)
                (clear-screen))
-    ("push" (push (copy-matrix (caar stack)) (car stack)))
-    ("pop" (pop (car stack)))
+    ("push" (setf (cdr stack) (cons (copy-matrix (car stack)) (cdr stack))))
+    ("pop" (setf (car stack) (cadr stack)
+                 (cdr stack) (cddr stack)))
     (otherwise
      (parse-line-args line edges polygons stack (parse-args (next-line stream))))))
 
 (defun parse-line-args (line edges polygons stack args)
   "Parses LINE with arg commands."
   (flet ((post-add-lines ()
-           (matrix-multiply (caar stack) edges)
+           (matrix-multiply (car stack) edges)
            (draw-lines edges '(255 0 255))
            (clear-matrix edges))
          (post-add-polygons ()
-           (matrix-multiply (caar stack) polygons)
+           (matrix-multiply (car stack) polygons)
            (draw-polygons polygons '(255 0 255))
            (clear-matrix polygons))
          (update-current-stack (transform)
-           (setf (caar stack)
-                 (matrix-multiply (caar stack) transform))))
+           (setf (car stack) (matrix-multiply (car stack) transform))))
     (switch line #'string=
       ("line" (apply #'add-edge edges args)
               (post-add-lines))
